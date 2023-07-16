@@ -64,26 +64,30 @@ function Row(props: { row: Meal}) {
 
 
 export const Meals = ({ meals }: MealsProps) => {
-    return (
-        <Container>
-            <TableContainer>
-                <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell>Posiłek</TableCell>
-                            <TableCell>Przygotowanie</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {
-                        meals.map((meal) => (
-                          <Row key={meal.type} row={meal} />
-                        ))
-                      }
-                    </TableBody>
-                </Table> 
-            </TableContainer>
-        </Container>
-    );
+  if (meals.length === 0) {
+    return (<Container data-testid='meals'>Brak posiłków</Container>)
+  }
+
+  return (
+      <Container data-testid='meals'>
+          <TableContainer>
+              <Table aria-label="collapsible table">
+                  <TableHead>
+                      <TableRow>
+                          <TableCell />
+                          <TableCell>Posiłek</TableCell>
+                          <TableCell>Przygotowanie</TableCell>
+                      </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {
+                      meals.map((meal) => (
+                        <Row key={meal.type} row={meal} />
+                      ))
+                    }
+                  </TableBody>
+              </Table> 
+          </TableContainer>
+      </Container>
+  );
 }
