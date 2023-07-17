@@ -1,3 +1,5 @@
+﻿using DietDisplay.API.Model;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -36,9 +38,27 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+app.MapGet("/meals/{date}", (DateOnly date) =>
+{
+    var meals = new[]
+    {
+        new Meal(new []
+        {
+            new Ingredient("Jajka", 2),
+            new Ingredient("Masło", 100),
+        },
+        MealType.Snack,
+        "Jajkuj masła")
+    };
+    return meals;
+})
+.WithName("GetMeals")
+.WithOpenApi();
+
 app.Run();
 
 internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
