@@ -1,8 +1,10 @@
 CREATE TABLE Meals (
     ID INT PRIMARY KEY,
     Preparation NVARCHAR(500),
-    MealType NVARCHAR(20)
+    MealType NVARCHAR(20),
+    DayID INT
 );
+
 
 CREATE TABLE Ingredients (
     ID INT PRIMARY KEY,

@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS Ingredients;
+DROP TABLE IF EXISTS Meals;
