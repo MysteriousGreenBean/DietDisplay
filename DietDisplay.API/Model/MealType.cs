@@ -26,7 +26,7 @@
             };
         }
 
-        public static MealType FromFriendlyString(string mealType)
+        public static MealType FromFriendlyString(this string mealType)
         {
             return mealType switch
             {

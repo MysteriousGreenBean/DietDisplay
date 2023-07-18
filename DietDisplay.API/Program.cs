@@ -1,4 +1,8 @@
-﻿using DietDisplay.API.Model;
+﻿using DietDisplay.API;
+using DietDisplay.API.Logic;
+using DietDisplay.API.Logic.Database;
+using DietDisplay.API.Model;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +14,7 @@ builder.Services.AddCors(options => options.AddPolicy("LocalReact", builder =>
 {
     builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
 }));
+builder.Services.AddDietDisplay(builder.Configuration);
 
 var app = builder.Build();
 
@@ -28,18 +33,10 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("api/meals/{date}", (DateTime date) =>
+
+app.MapGet("api/meals/{date}", (DateTime date, IMealSelector mealSelector) =>
 {
-    var meals = new[]
-    {
-        new Meal(new []
-        {
-            new Ingredient("Jajka", 2),
-            new Ingredient("Masło", 100),
-        },
-        MealType.Snack,
-        "Jajkuj masła")
-    };
+    Meal[] meals = mealSelector.GetMealsFordate(date);
     return meals.Select(meal => 
         new
         {
@@ -57,9 +54,4 @@ app.MapGet("api/meals/{date}", (DateTime date) =>
 .WithOpenApi();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
 
