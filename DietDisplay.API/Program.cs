@@ -28,7 +28,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("api/meals", () =>
+app.MapGet("api/meals/{date}", (DateTime date) =>
 {
     var meals = new[]
     {
@@ -49,7 +49,7 @@ app.MapGet("api/meals", () =>
                     name = ingredient.Name,
                     quantity = ingredient.Quantity
                 }),
-            mealType = meal.MealType.ToFriendlyString(),
+            type = meal.MealType.ToFriendlyString(),
             preparation = meal.Preparation
         });
 })

@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { Meal, MealType } from './models/Meal';
-import { Box, Collapse, Container, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import axios from 'axios';
+import { Box, Collapse, Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import React from 'react';
+import { Meal, MealType } from './models/Meal';
 
 
 export interface MealsProps {
@@ -65,15 +64,6 @@ function Row(props: { row: Meal}) {
 
 
 export const Meals = ({ meals }: MealsProps) => {
-
-  useEffect(() => {
-    axios.get('https://localhost:7281/api/meals').then((response) => {
-      console.log(response.data);
-    }).catch((error) => {
-      console.log(error);
-    });
-  }, []);
-
   if (meals.length === 0) {
     return (<Container data-testid='meals'>Brak posiłków</Container>)
   }
