@@ -28,3 +28,6 @@ VALUES
     (14, 'Chleb żytni razowy', 100, 4),
     (15, 'Oliwa z oliwek', 15, 4),
     (16, 'Pomidor', 200, 4);
+
+INSERT INTO DayMeals (Date, DayID)
+VALUES ('2023-07-18', 1);

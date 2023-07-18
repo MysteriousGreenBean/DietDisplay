@@ -13,3 +13,8 @@ CREATE TABLE Ingredients (
     MealID INT,
     FOREIGN KEY (MealID) REFERENCES Meals(ID)
 );
+
+CREATE TABLE DayMeals (
+    Date DATE PRIMARY KEY,
+    DayID INT
+);
