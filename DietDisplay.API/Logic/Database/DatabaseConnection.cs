@@ -28,7 +28,7 @@ namespace DietDisplay.API.Logic.Database
         private int GetDayMealID(IDbConnection connection, DateTime date)
         {
             string query = "SELECT DayID FROM DayMeals WHERE Date = @date";
-            int dayID = connection.Query<int>(query, new { date = date.Date }).Single();
+            int dayID = connection.Query<int>(query, new { date = date.Date }).SingleOrDefault();
 
             return dayID == 0 ? InitializeDayMeal(connection, date).DayID : dayID;
         }
