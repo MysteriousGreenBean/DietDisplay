@@ -5,9 +5,9 @@ name: DietDisplay
 
 on:
   push:
-    branches: [ "master", "yaml-setup" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "master", "yaml-setup" ]
+    branches: [ "master" ]
 
 jobs:
   buildAPI:
