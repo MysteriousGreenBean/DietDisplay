@@ -1,13 +1,13 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: DietDisplay
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "yaml-setup" ]
   pull_request:
-    branches: [ "master"]
+    branches: [ "master", "yaml-setup" ]
 
 env:
   DOTNET_ROOT: /path/to/dotnet
@@ -21,7 +21,8 @@ jobs:
         shell: bash
           
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -66,6 +67,48 @@ jobs:
         curl -O ftp://${{ secrets.FTP_HOST }}/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         unzip -j -o API.zip
         rm API.zip
-    - name: Clean up
-      run: |
-        rm -r API.zip
+        
+  buildReact:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies and build React app
+        run: |
+          cd dietdisplay.web
+          npm install
+          npm run build
+      - name: Run tests
+        run: |
+          npm test
+      - name: Archive React artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-React
+          path: build
+          
+  deployReact:
+      needs: 
+        - buildReact
+        - deployAPI
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download API build
+          uses: actions/download-artifact@v3
+          with:
+            name: dist-React
+            path: build
+        - name: ZIP React build
+          run: zip -r build.zip build
+        - name: Upload ZIP with React via FTP
+          run: |
+            curl -T build.zip ftp://${{ secrets.FTP_HOST }}/wwwroot --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+        - name: Unzip API on the server
+          run: |
+            curl -O ftp://${{ secrets.FTP_HOST }}/wwwroot/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+            unzip -j -o API.zip
+            rm API.zip
