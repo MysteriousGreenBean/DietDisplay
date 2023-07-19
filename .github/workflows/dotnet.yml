@@ -42,13 +42,13 @@ jobs:
     needs: buildAPI
     runs-on: ubuntu-latest
     steps:
-    - name: Restore dependencies
-      run: dotnet restore DietDisplay.API 
     - name: Download API build
       uses: actions/download-artifact@v3
       with:
         name: API-build
         path: DietDisplay.API
+    - name: Restore dependencies
+      run: dotnet restore DietDisplay.API 
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true
     - name: Archive API artifacts
