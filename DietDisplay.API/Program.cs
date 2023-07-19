@@ -1,9 +1,20 @@
+﻿using DietDisplay.API;
+using DietDisplay.API.Logic;
+using DietDisplay.API.Logic.Database;
+using DietDisplay.API.Model;
+using Microsoft.Extensions.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options => options.AddPolicy("LocalReact", builder =>
+{
+    builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+}));
+builder.Services.AddDietDisplay(builder.Configuration);
 
 var app = builder.Build();
 
@@ -12,6 +23,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("LocalReact");
 }
 
 app.UseHttpsRedirection();
@@ -21,24 +33,25 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
+
+app.MapGet("api/meals/{date}", (DateTime date, IMealSelector mealSelector) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    Meal[] meals = mealSelector.GetMealsFordate(date);
+    return meals.Select(meal => 
+        new
+        {
+            ingredients = meal.Ingredients.Select(ingredient => 
+                           new
+                           {
+                    name = ingredient.Name,
+                    quantity = ingredient.Quantity
+                }),
+            type = meal.MealType.ToFriendlyString(),
+            preparation = meal.Preparation
+        });
 })
-.WithName("GetWeatherForecast")
+.WithName("GetMeals")
 .WithOpenApi();
 
 app.Run();
 
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

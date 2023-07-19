@@ -1,26 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
+import { ThemeProvider, createTheme } from '@mui/material';
 import './App.css';
+import { DietFor } from './components/DietFor';
 
 function App() {
+  const theme = createTheme({
+    palette: {
+      mode: 'dark',
+    },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App">  
+      <ThemeProvider theme={theme}>
+        <DietFor date={new Date()} />
+      </ThemeProvider>
     </div>
   );
 }
 
 export default App;
+
+
