@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const url = "https://localhost:7281/api"; 
+const url = "/api"; 
 
 export interface APIResponse<TData> {
     data: TData;
