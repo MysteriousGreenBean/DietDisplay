@@ -111,6 +111,6 @@ jobs:
             curl -T build.zip ftp://${{ secrets.FTP_HOST }}/wwwroot/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         - name: Unzip React build on the server
           run: |
-            curl -O ftp://${{ secrets.FTP_HOST }}/wwwroot/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+            curl -O ftp://${{ secrets.FTP_HOST }}/wwwroot/build.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
             unzip -j -o build.zip
             rm build.zip
