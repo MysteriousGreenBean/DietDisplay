@@ -28,8 +28,16 @@ jobs:
       run: dotnet test DietDisplay.API --no-build --verbosity normal
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
+    - name: Archive API artifacts
+      uses: samuelmeuli/action-ftp-deploy@4.0.0
       with:
-        name: dist-without-markdown
-        path: DietDisplay.API/bin/Release/net7.0
+        name: dist-API
+        path: DietDisplay.API/bin/Release/net7.0/win-x64
+    - name: Deploy API to Server
+      uses: samuelmeuli/action-ftp-deploy@4.0.0
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: DietDisplay.API/bin/Release/net7.0/win-x64
+        remote-dir: /
