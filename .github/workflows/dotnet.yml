@@ -38,7 +38,7 @@ jobs:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./DietDisplay.API/bin/Release/net7.0/win-x64/publish
+        local-dir: ./DietDisplay.API/bin/Release/net7.0/win-x64/publish/
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -69,7 +69,7 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dietdisplay.web/build
+          local-dir: ./dietdisplay.web/build/
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
