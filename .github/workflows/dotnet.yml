@@ -95,7 +95,6 @@ jobs:
           with:
             name: dist-React
             path: build
-        - name: Upload ZIP with React via FTP
+        - name: Upload React via FTP
           run: |
-            cd dietdisplay.web
             curl --ftp-create-dirs -T build/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
