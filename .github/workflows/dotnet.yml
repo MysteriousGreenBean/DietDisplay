@@ -22,17 +22,22 @@ jobs:
       run: dotnet restore DietDisplay.API 
     - name: Build
       run: dotnet build DietDisplay.API --no-restore
-  testAPI:
-    needs: buildAPI
-    runs-on: ubuntu-latest
-    steps:
     - name: Test
       run: dotnet test DietDisplay.API --no-build --verbosity normal
-      
+    - name: Archive API build
+      uses: actions/upload-artifact@v3
+      with:
+        name: API-build
+        path: DietDisplay.API
+    
   deployAPI:
     needs: buildAPI
     runs-on: ubuntu-latest
     steps:
+    - name: Download API build
+      uses: actions/download-artifact@v3
+      with:
+        name: API-build
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true=
     - name: Archive API artifacts
