@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "yaml-setup" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "yaml-setup" ]
 
 jobs:
   buildAPI:
@@ -38,6 +38,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: API-build
+        path: DietDisplay.API
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true=
     - name: Archive API artifacts
