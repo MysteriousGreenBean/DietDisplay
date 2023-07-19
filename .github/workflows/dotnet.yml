@@ -84,12 +84,13 @@ jobs:
           npm run build
       - name: Run tests
         run: |
+          cd dietdisplay.web
           npm test
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
           name: dist-React
-          path: build
+          path: dietdisplay.web/build
           
   deployReact:
       needs: 
