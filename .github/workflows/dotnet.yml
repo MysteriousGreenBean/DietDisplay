@@ -10,10 +10,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  buildAPI:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -26,12 +24,27 @@ jobs:
       run: dotnet build DietDisplay.API --no-restore
     - name: Test
       run: dotnet test DietDisplay.API --no-build --verbosity normal
+      
+  deployAPI:
+    runs-on: ubuntu-latest
+    steps:
     - name: Publish
-      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true
-    - name: Deploy API to Server
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true=
+    - name: Archive API artifacts
+      uses: actions/upload-artifact@v3
       with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: DietDisplay.API/bin/Release/net7.0/win-x64/
+        name: dist-API
+        path: DietDisplay.API/bin/Release/net7.0/win-x64
+    - name: ZIP published API
+      run: zip -r API.zip DietDisplay.API/bin/Release/net7.0/win-x64
+    - name: Upload ZIP with API via FTP
+      run: |
+        curl -T API.zip ftp://${{ secrets.FTP_HOST }}/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+    - name: Unzip API on the server
+      run: |
+        curl -O ftp://${{ secrets.FTP_HOST }}/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+        unzip -j -o API.zip
+        rm API.zip
+    - name: Clean up
+      run: |
+        rm -r API.zip
