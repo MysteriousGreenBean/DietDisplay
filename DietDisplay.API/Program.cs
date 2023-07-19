@@ -1,8 +1,6 @@
 ﻿using DietDisplay.API;
 using DietDisplay.API.Logic;
-using DietDisplay.API.Logic.Database;
 using DietDisplay.API.Model;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +25,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 var summaries = new[]
 {
