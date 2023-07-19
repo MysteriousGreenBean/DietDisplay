@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "master", "yaml-setup" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "master", "yaml-setup" ]
+    branches: [ "master"]
 
 env:
   DOTNET_ROOT: /path/to/dotnet
