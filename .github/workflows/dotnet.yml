@@ -52,15 +52,17 @@ jobs:
       run: dotnet restore DietDisplay.API 
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
+    - name: Upload  API via FTP
+      run: |
+        cd DietDisplay.API/bin/Release/net7.0/win-x64/publish
+        curl -T /* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dist-API
         path: DietDisplay.API/bin/Release/net7.0/win-x64/publish
-    - name: Upload  API via FTP
-      run: curl --ftp-create-dirs -T DietDisplay.API/bin/Release/net7.0/win-x64/publish/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         
-  buildReact:
+  buildAndDeployReact:
       runs-on: ubuntu-latest
       steps:
       - name: Checkout code
@@ -78,23 +80,11 @@ jobs:
         run: |
           cd dietdisplay.web
           npm test
+      - name: Upload React via FTP
+        run: |
+          curl -T build/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
           name: dist-React
           path: dietdisplay.web/build
-          
-  deployReact:
-      needs: 
-        - buildReact
-        - deployAPI
-      runs-on: ubuntu-latest
-      steps:
-        - name: Download API build
-          uses: actions/download-artifact@v3
-          with:
-            name: dist-React
-            path: build
-        - name: Upload React via FTP
-          run: |
-            curl --ftp-create-dirs -T build/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
