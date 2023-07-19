@@ -29,7 +29,7 @@ jobs:
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true
     - name: Archive API artifacts
-      uses: samuelmeuli/action-ftp-deploy@4.0.0
+      uses: actions/upload-artifact@v3
       with:
         name: dist-API
         path: DietDisplay.API/bin/Release/net7.0/win-x64
