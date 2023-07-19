@@ -108,7 +108,7 @@ jobs:
           run: zip -r build.zip build
         - name: Upload ZIP with React via FTP
           run: |
-            curl -T build.zip ftp://${{ secrets.FTP_HOST }}/wwwroot --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+            curl -T build.zip ftp://${{ secrets.FTP_HOST }}/wwwroot/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         - name: Unzip API on the server
           run: |
             curl -O ftp://${{ secrets.FTP_HOST }}/wwwroot/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
