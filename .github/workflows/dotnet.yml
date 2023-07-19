@@ -51,14 +51,14 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore DietDisplay.API 
     - name: Publish
-      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true
+      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
+    - name: ZIP published API
+      run: zip -r API.zip DietDisplay.API/bin/Release/net7.0/win-x64
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dist-API
-        path: DietDisplay.API/bin/Release/net7.0/win-x64
-    - name: ZIP published API
-      run: zip -r API.zip DietDisplay.API/bin/Release/net7.0/win-x64
+        path: API.zip
     - name: Upload ZIP with API via FTP
       run: |
         curl -T API.zip ftp://${{ secrets.FTP_HOST }}/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
@@ -67,6 +67,7 @@ jobs:
         curl -O ftp://${{ secrets.FTP_HOST }}/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         unzip -j -o API.zip
         rm API.zip
+      
         
   buildReact:
       runs-on: ubuntu-latest
