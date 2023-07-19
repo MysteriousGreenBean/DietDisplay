@@ -53,8 +53,7 @@ jobs:
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
     - name: Upload  API via FTP
-      run: |
-        curl -T DietDisplay.API/bin/Release/net7.0/win-x64/publish/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+      run: curl --ftp-create-dirs -R -T "DietDisplay.API/bin/Release/net7.0/win-x64/publish/*" "ftp://${{ secrets.FTP_HOST }}/" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -82,7 +81,7 @@ jobs:
       - name: Upload React via FTP
         run: |
           cd dietdisplay.web
-          curl -T build/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
+          run: curl --ftp-create-dirs -R -T "build/*" "ftp://${{ secrets.FTP_HOST }}/" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
