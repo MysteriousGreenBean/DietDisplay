@@ -27,13 +27,6 @@ jobs:
       run: dotnet test DietDisplay.API --no-build --verbosity normal
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
-    - name: Upload  API via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./DietDisplay.API/bin/Release/net7.0/win-x64/publish/
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -58,13 +51,6 @@ jobs:
         run: |
           cd dietdisplay.web
           npm test
-      - name: Upload  API via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dietdisplay.web/build/
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -85,6 +71,9 @@ jobs:
           with:
             name: dist-React
             path: shared_files
+        - name: Replace DefaultConnection in appsettings.json
+          run: |
+            sed -i "s/{secrets.DefaultConnection}/${{ secrets.DefaultConnection }}/" shared_files/appsettings.json
         - name: Upload  API via FTP
           uses: SamKirkland/FTP-Deploy-Action@v4.3.4
           with:
