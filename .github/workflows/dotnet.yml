@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: DietDisplay
 
 on:
   push:
@@ -13,7 +13,8 @@ jobs:
   buildAPI:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -24,37 +25,59 @@ jobs:
       run: dotnet build DietDisplay.API --no-restore
     - name: Test
       run: dotnet test DietDisplay.API --no-build --verbosity normal
-    - name: Archive API build
-      uses: actions/upload-artifact@v3
-      with:
-        name: API-build
-        path: DietDisplay.API
-    
-  deployAPI:
-    needs: buildAPI
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download API build
-      uses: actions/download-artifact@v3
-      with:
-        name: API-build
     - name: Publish
-      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --self-contained true=
+      run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dist-API
-        path: DietDisplay.API/bin/Release/net7.0/win-x64
-    - name: ZIP published API
-      run: zip -r API.zip DietDisplay.API/bin/Release/net7.0/win-x64
-    - name: Upload ZIP with API via FTP
-      run: |
-        curl -T API.zip ftp://${{ secrets.FTP_HOST }}/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-    - name: Unzip API on the server
-      run: |
-        curl -O ftp://${{ secrets.FTP_HOST }}/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-        unzip -j -o API.zip
-        rm API.zip
-    - name: Clean up
-      run: |
-        rm -r API.zip
+        path: DietDisplay.API/bin/Release/net7.0/win-x64/publish
+        
+  buildReact:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install dependencies and build React app
+        run: |
+          cd dietdisplay.web
+          npm install
+          npm run build
+      - name: Run tests
+        run: |
+          cd dietdisplay.web
+          npm test
+      - name: Archive React artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-React
+          path: dietdisplay.web/build
+          
+  deployAll:
+        needs: [buildAPI, buildReact]
+        runs-on: ubuntu-latest
+        steps:
+        - name: Download API files
+          uses: actions/download-artifact@v3
+          with:
+            name: dist-API
+            path: shared_files
+        - name: Download React files
+          uses: actions/download-artifact@v3
+          with:
+            name: dist-React
+            path: shared_files
+        - name: Replace DefaultConnection in appsettings.json
+          run: |
+            sed -i "s/{secrets.DefaultConnection}/${{ secrets.DefaultConnection }}/" shared_files/appsettings.json
+        - name: Upload  API via FTP
+          uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+          with:
+            server: ${{ secrets.FTP_HOST }}
+            username: ${{ secrets.FTP_USERNAME }}
+            password: ${{ secrets.FTP_PASSWORD }}
+            local-dir: ./shared_files/

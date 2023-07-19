@@ -26,12 +26,12 @@ export function useGet<TData>(endpoint: string): APIResponse<TData> {
     const [error, setError] = useState<any>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
 
-    const requestOptions = {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-    };
-
     useEffect (() => {
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        };
+
         setLoading(true);
         const callTarget = `${url}/${endpoint}`;
         fetch(callTarget, requestOptions)

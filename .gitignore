@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /dietdisplay.web/build
 /DietDisplay.API/appsettings.json
+/DietDisplay.API/wwwroot/*
+!/DietDisplay.API/wwwroot/.placeholder

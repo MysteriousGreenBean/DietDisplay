@@ -1,8 +1,7 @@
 ﻿using DietDisplay.API;
 using DietDisplay.API.Logic;
-using DietDisplay.API.Logic.Database;
 using DietDisplay.API.Model;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,10 +27,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+if (app.Environment.IsProduction())
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory()),
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(Directory.GetCurrentDirectory()),
+    });
+}
 
 
 app.MapGet("api/meals/{date}", (DateTime date, IMealSelector mealSelector) =>
