@@ -34,10 +34,10 @@ jobs:
         name: dist-API
         path: DietDisplay.API/bin/Release/net7.0/win-x64
     - name: Deploy API to Server
-      uses: samuelmeuli/action-ftp-deploy@4.0.0
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_HOST }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: DietDisplay.API/bin/Release/net7.0/win-x64
-        remote-dir: /
+        server-dir: /
