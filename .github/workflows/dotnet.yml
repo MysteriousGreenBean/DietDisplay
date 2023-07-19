@@ -52,22 +52,13 @@ jobs:
       run: dotnet restore DietDisplay.API 
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
-    - name: ZIP published API
-      run: zip -r API.zip DietDisplay.API/bin/Release/net7.0/win-x64
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dist-API
-        path: API.zip
-    - name: Upload ZIP with API via FTP
-      run: |
-        curl -T API.zip ftp://${{ secrets.FTP_HOST }}/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-    - name: Unzip API on the server
-      run: |
-        curl -O ftp://${{ secrets.FTP_HOST }}/API.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-        unzip -j -o API.zip
-        rm API.zip
-      
+        path: DietDisplay.API/bin/Release/net7.0/win-x64/publish
+    - name: Upload  API via FTP
+      run: curl --ftp-create-dirs -T DietDisplay.API/bin/Release/net7.0/win-x64/publish/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
         
   buildReact:
       runs-on: ubuntu-latest
@@ -104,13 +95,7 @@ jobs:
           with:
             name: dist-React
             path: build
-        - name: ZIP React build
-          run: zip -r build.zip build
         - name: Upload ZIP with React via FTP
           run: |
-            curl -T build.zip ftp://${{ secrets.FTP_HOST }}/ --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-        - name: Unzip React build on the server
-          run: |
-            curl -O ftp://${{ secrets.FTP_HOST }}/build.zip --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
-            unzip -j -o build.zip
-            rm build.zip
+            cd dietdisplay.web
+            curl --ftp-create-dirs -T build/* ftp://${{ secrets.FTP_HOST }} --user ${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}
