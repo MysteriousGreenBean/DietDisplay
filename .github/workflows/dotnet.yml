@@ -34,8 +34,8 @@ jobs:
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
     - name: Upload  API via FTP
       run: |
-          echo "Current directory: $(pwd)"
-          curl --ftp-create-dirs -R -T "DietDisplay/DietDisplay.API/bin/Release/net7.0/win-x64/publish/*" "ftp://${{ secrets.FTP_HOST }}/" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
+          find DietDisplay.API/bin/Release/net7.0/win-x64/publish -type f -o -type d > file_list.txt
+          xargs -a file_list.txt -I {} curl --ftp-create-dirs -R -T "{}" "ftp://${{ secrets.FTP_HOST }}/{}" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
     - name: Archive API artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -62,8 +62,8 @@ jobs:
           npm test
       - name: Upload React via FTP
         run: |
-          echo "Current directory: $(pwd)"
-          curl --ftp-create-dirs -R -T "DietDisplay/dietdisplay.web/build/*" "ftp://${{ secrets.FTP_HOST }}/" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
+           find DietDisplay.API/bin/Release/net7.0/win-x64/publish -type f -o -type d > file_list.txt
+           xargs -a file_list.txt -I {} curl --ftp-create-dirs -R -T "{}" "ftp://${{ secrets.FTP_HOST }}/{}" --user "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}"
       - name: Archive React artifacts
         uses: actions/upload-artifact@v3
         with:
