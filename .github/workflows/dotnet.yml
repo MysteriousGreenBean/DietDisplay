@@ -22,10 +22,15 @@ jobs:
       run: dotnet restore DietDisplay.API 
     - name: Build
       run: dotnet build DietDisplay.API --no-restore
+  testAPI:
+    needs: buildAPI
+    runs-on: ubuntu-latest
+    steps:
     - name: Test
       run: dotnet test DietDisplay.API --no-build --verbosity normal
       
   deployAPI:
+    needs: buildAPI
     runs-on: ubuntu-latest
     steps:
     - name: Publish
