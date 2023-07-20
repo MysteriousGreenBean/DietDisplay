@@ -1,3 +1,6 @@
 DROP TABLE IF EXISTS Ingredients;
 DROP TABLE IF EXISTS Meals;
 DROP TABLE IF EXISTS DayMeals;
+DROP PROCEDURE IF EXISTS InsertMealsAndIngredients;
+DROP TYPE IF EXISTS MealsTableType;
+DROP TYPE IF EXISTS IngredientsTableType;
