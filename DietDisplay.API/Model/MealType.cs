@@ -28,14 +28,14 @@
 
         public static MealType FromFriendlyString(this string mealType)
         {
-            return mealType switch
+            return mealType.ToLowerInvariant() switch
             {
-                "Śniadanie" => MealType.Breakfast,
-                "Drugie śniadanie" => MealType.SecondBreakfast,
-                "Obiad" => MealType.Dinner,
-                "Podwieczorek" => MealType.Tea,
-                "Kolacja" => MealType.Supper,
-                "Przekąska" => MealType.Snack,
+                "śniadanie" => MealType.Breakfast,
+                "drugie śniadanie" => MealType.SecondBreakfast,
+                "obiad" => MealType.Dinner,
+                "podwieczorek" => MealType.Tea,
+                "kolacja" => MealType.Supper,
+                "przekąska" => MealType.Snack,
                 _ => throw new ArgumentOutOfRangeException(nameof(mealType), mealType, null)
             };
         }
