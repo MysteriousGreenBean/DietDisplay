@@ -36,7 +36,7 @@
                 "podwieczorek" => MealType.Tea,
                 "kolacja" => MealType.Supper,
                 "przekąska" => MealType.Snack,
-                _ => throw new ArgumentOutOfRangeException(nameof(mealType), mealType, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(mealType), mealType)
             };
         }
     }

@@ -23,7 +23,6 @@ export const DietFor = ({ date }: DietForProps) => {
 
     return (
         <Container data-testid='dietFor'>
-            <h1>Dieta na dzień {date.toLocaleDateString()}</h1>
             <Meals meals={meals}/>
         </Container>
     );
