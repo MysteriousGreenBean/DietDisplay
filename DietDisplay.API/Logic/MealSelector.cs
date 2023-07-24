@@ -12,6 +12,17 @@ namespace DietDisplay.API.Logic
             this.databaseConnection = databaseConnection;
         }
 
+        public (DateTime oldestDate, DateTime newestDate) GetDateRange()
+        {
+            DateTime weekAgo = DateTime.UtcNow.Date.AddDays(-7).Date;
+            DateTime inAMonth = DateTime.UtcNow.Date.AddDays(30).Date;
+            DateTime oldestDateInDatabase = databaseConnection.GetOldestAvailableDate();
+            if (oldestDateInDatabase < weekAgo)
+                oldestDateInDatabase = weekAgo;
+
+            return (oldestDateInDatabase, inAMonth);
+        }
+
         public Meal[] GetMealsFordate(DateTime date)
         {
             MealIgredientsData[] mealIgredientsDatas = databaseConnection.GetMealsForDate(date);
