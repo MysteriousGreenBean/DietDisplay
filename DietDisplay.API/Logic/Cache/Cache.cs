@@ -6,6 +6,7 @@ namespace DietDisplay.API.Logic.Cache
     {
         private readonly Dictionary<string, CacheEntry<object, DateTime>> perCalendarDayCache = new Dictionary<string, CacheEntry<object, DateTime>>();
 
+        /// <inheritdoc/>
         public void CacheMethodInvocationPerCalendarDay(string cacheKey, IInvocation invocation)
         {
             invocation.Proceed();
@@ -13,6 +14,8 @@ namespace DietDisplay.API.Logic.Cache
             SetPerCalendarDayCacheValue(cacheKey, cacheEntry);
         }
 
+
+        /// <inheritdoc/>
         public object? GetPerCalendarDeyCacheValue(string cacheKey)
         {
             if (perCalendarDayCache.TryGetValue(cacheKey, out CacheEntry<object, DateTime>? cacheValue))
