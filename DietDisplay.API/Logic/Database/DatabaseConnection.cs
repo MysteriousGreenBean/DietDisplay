@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DietDisplay.API.Exceptions;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -7,7 +8,7 @@ namespace DietDisplay.API.Logic.Database
     public class DatabaseConnection : IDatabaseConnection
     {
         private readonly string connectionString;
-        private int[] dayIds = new int[0];
+        private int[] dayIds = Array.Empty<int>();
 
         public DatabaseConnection(string connectionString)
         {
@@ -15,20 +16,36 @@ namespace DietDisplay.API.Logic.Database
         }
 
         /// <inheritdoc/>
+        public DateTime GetOldestAvailableDate()
+        {
+            using IDbConnection connection = OpenConnection();
+            string query = "SELECT TOP 1 Date FROM DayMeals ORDER BY Date ASC";
+            return DateTime.SpecifyKind(connection.Query<DateTime>(query).SingleOrDefault(DateTime.UtcNow.Date), DateTimeKind.Utc);
+        }
+
+        /// <inheritdoc/>
         public MealIgredientsData[] GetMealsForDate(DateTime date)
         {
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                int dayMealID = GetDayMealID(connection, date);
-                return GetMealsFromDay(connection, dayMealID);
-            }
+            using IDbConnection connection = OpenConnection();
+
+            int dayMealID = GetDayMealID(connection, date);
+            return GetMealsFromDay(connection, dayMealID);
+        }
+
+        private IDbConnection OpenConnection()
+        {
+            IDbConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+            return connection;
         }
 
         private int GetDayMealID(IDbConnection connection, DateTime date)
         {
             string query = "SELECT DayID FROM DayMeals WHERE Date = @date";
             int dayID = connection.Query<int>(query, new { date = date.Date }).SingleOrDefault();
+
+            if (dayID == 0 && date.Date < DateTime.UtcNow.Date)
+                throw new NoMealsException(date);
 
             return dayID == 0 ? InitializeDayMeal(connection, date).DayID : dayID;
         }
