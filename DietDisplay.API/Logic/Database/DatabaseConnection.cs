@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DietDisplay.API.Exceptions;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -17,18 +18,20 @@ namespace DietDisplay.API.Logic.Database
         /// <inheritdoc/>
         public MealIgredientsData[] GetMealsForDate(DateTime date)
         {
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                int dayMealID = GetDayMealID(connection, date);
-                return GetMealsFromDay(connection, dayMealID);
-            }
+            using IDbConnection connection = new SqlConnection(connectionString);
+
+            connection.Open();
+            int dayMealID = GetDayMealID(connection, date);
+            return GetMealsFromDay(connection, dayMealID);
         }
 
         private int GetDayMealID(IDbConnection connection, DateTime date)
         {
             string query = "SELECT DayID FROM DayMeals WHERE Date = @date";
             int dayID = connection.Query<int>(query, new { date = date.Date }).SingleOrDefault();
+
+            if (dayID == 0 && date.Date < DateTime.UtcNow.Date)
+                throw new NoPastMealsException(date);
 
             return dayID == 0 ? InitializeDayMeal(connection, date).DayID : dayID;
         }

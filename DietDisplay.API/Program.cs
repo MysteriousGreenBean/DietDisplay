@@ -1,7 +1,9 @@
 ﻿using DietDisplay.API;
 using DietDisplay.API.Logic;
 using DietDisplay.API.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.OpenApi.Expressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,9 +42,9 @@ if (app.Environment.IsProduction())
 }
 
 
-app.MapGet("api/meals/{date}", (DateTime date, IMealSelector mealSelector) =>
+app.MapGet("api/meals", (IMealSelector mealSelector, [FromQuery(Name = "date")] DateOnly date) =>
 {
-    Meal[] meals = mealSelector.GetMealsFordate(date);
+    Meal[] meals = mealSelector.GetMealsFordate(date.ToDateTime(TimeOnly.MinValue));
     return meals.Select(meal => 
         new
         {
