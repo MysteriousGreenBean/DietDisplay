@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import { getDate } from "../../helpers/dateHelper";
 
 const url = "/api"; 
 
@@ -26,10 +27,10 @@ export function useGet<TData>(endpoint: string): APIResponse<TData> {
     const [error, setError] = useState<any>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect (() => {
+    useMemo(() => {
         const requestOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         };
 
         setLoading(true);
@@ -38,7 +39,13 @@ export function useGet<TData>(endpoint: string): APIResponse<TData> {
             .then(response => response.json())
             .then((data) => {
                 console.debug(`get ${callTarget}`, data);
-                setData(data as TData);
+                const parsedData = JSON.parse(JSON.stringify(data), (_, value) => {
+                    if (typeof value === 'string' && /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{7}Z/.test(value)) {
+                      return getDate(new Date(value));
+                    }
+                    return value;
+                  });
+                setData(parsedData as TData);
                 setLoading(false);
             }).catch((error) => {
                 console.error(`error while calling get ${callTarget}`, error);

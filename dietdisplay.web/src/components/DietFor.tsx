@@ -10,8 +10,8 @@ export interface DietForProps {
 }
 
 export const DietFor = ({ date }: DietForProps) => {
-    const encodedDate = useMemo(() => encodeURIComponent(date.toISOString()), [date]);
-    const { data: meals, loading, error} = useApi<Meal[]>(`meals/${encodedDate}`, HttpMethod.GET);
+    const encodedDate = useMemo(() => encodeURIComponent(date.toDateString()), [date]);
+    const { data: meals, loading, error} = useApi<Meal[]>(`meals?date=${encodedDate}`, HttpMethod.GET);
 
     if (loading) {
         return <Container><CircularProgress /><Container>Ładowanie posiłków...</Container></Container>
