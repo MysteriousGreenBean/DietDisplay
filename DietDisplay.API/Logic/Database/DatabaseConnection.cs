@@ -20,7 +20,7 @@ namespace DietDisplay.API.Logic.Database
         {
             using IDbConnection connection = OpenConnection();
             string query = "SELECT TOP 1 Date FROM DayMeals ORDER BY Date ASC";
-            return connection.Query<DateTime>(query).SingleOrDefault(DateTime.UtcNow.Date);
+            return DateTime.SpecifyKind(connection.Query<DateTime>(query).SingleOrDefault(DateTime.UtcNow.Date), DateTimeKind.Utc);
         }
 
         /// <inheritdoc/>

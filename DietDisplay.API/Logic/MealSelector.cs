@@ -23,7 +23,7 @@ namespace DietDisplay.API.Logic
             return (oldestDateInDatabase, inAMonth);
         }
 
-        public Meal[] GetMealsFordate(DateTime date)
+        public Meal[] GetMealsForDate(DateTime date)
         {
             MealIgredientsData[] mealIgredientsDatas = databaseConnection.GetMealsForDate(date);
             return ConvertToMeals(mealIgredientsDatas);

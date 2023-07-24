@@ -41,6 +41,18 @@ if (app.Environment.IsProduction())
     });
 }
 
+app.MapGet("api/mealRange", (IMealSelector mealSelector) =>
+{
+    (DateTime oldestDate, DateTime newestDate) = mealSelector.GetDateRange();
+
+    return new
+    {
+        oldestDate = oldestDate.ToString("o"),
+        newestDate = newestDate.ToString("o")
+    };
+})
+.WithName("GetMealRange")
+.WithOpenApi();
 
 app.MapGet("api/meals", ([FromQuery(Name = "date")] DateOnly date, IMealSelector mealSelector) =>
 {
@@ -49,7 +61,7 @@ app.MapGet("api/meals", ([FromQuery(Name = "date")] DateOnly date, IMealSelector
     if (dateTime < oldestDate || dateTime > newestDate)
         throw new NoMealsException(dateTime);
 
-    Meal[] meals = mealSelector.GetMealsFordate(dateTime);
+    Meal[] meals = mealSelector.GetMealsForDate(dateTime);
     return meals.Select(meal => 
         new
         {

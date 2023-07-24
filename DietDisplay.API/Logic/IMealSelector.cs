@@ -10,7 +10,7 @@ namespace DietDisplay.API.Logic
         /// </summary>
         /// <param name="date">Date for which meals should be selected. If the date was not assigned any meals yet - it will be assigned.</param>
         /// <returns>Array of meals for given date.</returns>
-        Meal[] GetMealsFordate(DateTime date);
+        Meal[] GetMealsForDate(DateTime date);
 
         /// <summary>
         /// Gets available date range.

@@ -1,6 +1,8 @@
 import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 import { addDays } from "../../helpers/dateHelper";
+import { HttpMethod, useApi } from "../api/useApi";
+import { MealRange } from "../models/MealRange";
 
 export interface DateNavigatorProps {
     currentDate: Date;
@@ -9,6 +11,7 @@ export interface DateNavigatorProps {
 
 export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) => {
     const [ date, setDate ] = useState(currentDate);
+    const { data: mealRange, loading, error } = useApi<MealRange>('mealRange', HttpMethod.GET);
 
     const updateDate = (newDate: Date) => {
         onDateChange?.(newDate);
@@ -16,7 +19,12 @@ export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) 
     };
 
     const nextDate = addDays(1, date);
-    const nextWeekDate = addDays(30);
+    
+    const isNextButtonDisabled = () => {
+        if (loading || error) 
+            return true;
+        return nextDate > mealRange.newestDate;
+    };
 
     return (
         <Container>
@@ -30,7 +38,7 @@ export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) 
                             color="inherit" 
                             variant="outlined" 
                             onClick={() => updateDate(nextDate)}
-                            disabled={nextDate > nextWeekDate}>
+                            disabled={isNextButtonDisabled()}>
                                 {`${nextDate.toLocaleDateString()} >`}
                             </Button>
                     </Toolbar>
