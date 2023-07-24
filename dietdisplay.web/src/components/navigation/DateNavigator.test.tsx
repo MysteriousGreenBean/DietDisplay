@@ -6,6 +6,7 @@ import { useApi } from '../api/useApi';
 import { DateNavigator } from './DateNavigator';
 
 jest.mock('../api/useApi');
+jest.mock('@mui/material/useMediaQuery');
 
 describe('DateNavigator', () => {    
     it('should render date', () => {
