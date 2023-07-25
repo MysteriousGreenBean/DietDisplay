@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /DietDisplay.API/appsettings.json
 /DietDisplay.API/wwwroot/*
 !/DietDisplay.API/wwwroot/.placeholder
+/DietDisplay.API/appsettings.Development.json

@@ -15,6 +15,7 @@ builder.Services.AddCors(options => options.AddPolicy("LocalReact", builder =>
 {
     builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
 }));
+builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
 builder.Services.AddDietDisplay(builder.Configuration);
 
 var app = builder.Build();
