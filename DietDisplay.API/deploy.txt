@@ -1,5 +1,0 @@
-// Commands to run after deploy from github
-
-cd dietdisplay.web && npm run-script build
-xcopy "dietdisplay.web\build\*.*" ".\" /E /Y
-
