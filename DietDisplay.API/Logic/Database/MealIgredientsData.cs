@@ -2,12 +2,12 @@
 {
     public class MealIgredientsData
     {
-        public int IngredientID { get; init; }
-        public string IngredientName { get; init; } = string.Empty;
-        public int Quantity { get; init; }
-        public int MealID { get; init; }
-        public string Preparation { get; init; } = string.Empty;
-        public string MealType { get; init; } = string.Empty;
-        public int DayID { get; init; }
+        public required int IngredientID { get; init; }
+        public required string IngredientName { get; init; }
+        public required int Quantity { get; init; }
+        public required int MealID { get; init; }
+        public required string Preparation { get; init; }
+        public required string MealType { get; init; }
+        public required int DayID { get; init; }
     }
 }
