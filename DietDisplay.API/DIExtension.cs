@@ -2,6 +2,9 @@
 using DietDisplay.API.Logic;
 using DietDisplay.API.Logic.Cache;
 using DietDisplay.API.Logic.Database;
+using DietDisplay.API.Logic.DateProvider;
+using System.Data;
+using System.Data.SqlClient;
 using System.Reflection;
 
 namespace DietDisplay.API
@@ -10,11 +13,14 @@ namespace DietDisplay.API
     {
         public static void AddDietDisplay(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IDateProvider, DateProvider>();
             services.AddSingleton<ICache, Cache>();
             services.AddTransient<CacheInterceptor>();
             services.AddTransient<MealSelector>();
-            services.AddScoped<IDatabaseConnection>(sp => new DatabaseConnection(configuration.GetConnectionString("DefaultConnection") 
-                ?? throw new InvalidDataException("Connection string not defined in the file")));
+            services.AddTransient<IDbConnection>(_ => new SqlConnection(configuration.GetConnectionString("DefaultConnection") 
+                               ?? throw new InvalidDataException("Connection string not defined in the file")));
+            services.AddTransient<IDataAccess, DapperDataAccess>();
+            services.AddScoped<IDatabaseConnection, DatabaseConnection>();
             services.AddCacheInterceptor();
         }
 

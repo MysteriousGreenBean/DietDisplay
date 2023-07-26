@@ -40,7 +40,7 @@ export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) 
 
     return (
         <Container>
-            <Box sx={{ width: '100%', top: 0, position: 'sticky'}}>
+            <Box sx={{ width: '100%', top: 0, position: 'sticky', zIndex: 9999}}>
                 <AppBar>
                     <Toolbar>
                         <Button 

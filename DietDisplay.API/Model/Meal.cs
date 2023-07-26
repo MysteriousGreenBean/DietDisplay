@@ -2,9 +2,9 @@
 {
     public class Meal
     {
-        public int ID { get; init; }
-        public Ingredient[] Ingredients { get; init; } = new Ingredient[0];
-        public MealType MealType { get; init; }
-        public string Preparation { get; init; } = string.Empty;
+        public required int ID { get; init; }
+        public required Ingredient[] Ingredients { get; init; }
+        public required MealType MealType { get; init; }
+        public required string Preparation { get; init; }
     }
 }

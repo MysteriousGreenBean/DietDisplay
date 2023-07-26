@@ -2,7 +2,7 @@
 {
     public class DayMealData
     {
-        public DateTime Date { get; init; }
-        public int DayID { get; init; }
+        public required DateTime Date { get; init; }
+        public required int DayID { get; init; }
     }
 }

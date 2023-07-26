@@ -2,7 +2,7 @@
 {
     public class Ingredient
     {
-        public string Name { get; init; } = string.Empty;
-        public int Quantity { get; init; }
+        public required string Name { get; init; }
+        public required int Quantity { get; init; }
     }
 }
