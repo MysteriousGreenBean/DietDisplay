@@ -13,11 +13,11 @@ namespace DietDisplay.API.Logic.Database
         }
 
         /// <inheritdoc/>
-        public IEnumerable<T> Query<T>(string query, object? parameters = null)
-            => connection.Query<T>(query, parameters);
+        public IEnumerable<T> Query<T>(IQuery query)
+            => connection.Query<T>(query.Sql, query.Parameters);
 
         /// <inheritdoc/>
-        public int Execute(string query, object? parameters = null)
-            => connection.Execute(query, parameters);
+        public int Execute(IQuery query)
+            => connection.Execute(query.Sql, query.Parameters);
     }
 }

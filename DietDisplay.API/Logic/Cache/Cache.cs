@@ -1,16 +1,23 @@
 ﻿using Castle.DynamicProxy;
+using DietDisplay.API.Logic.DateProvider;
 
 namespace DietDisplay.API.Logic.Cache
 {
     public class Cache : ICache
     {
         private readonly Dictionary<string, CacheEntry<object, DateTime>> perCalendarDayCache = new Dictionary<string, CacheEntry<object, DateTime>>();
+        private readonly IDateProvider dateProvider;
+
+        public Cache(IDateProvider dateProvider)
+        {
+            this.dateProvider = dateProvider;
+        }
 
         /// <inheritdoc/>
         public void CacheMethodInvocationPerCalendarDay(string cacheKey, IInvocation invocation)
         {
             invocation.Proceed();
-            var cacheEntry = new CacheEntry<object, DateTime>(invocation.ReturnValue, DateTime.UtcNow.Date, (createdDate) => createdDate == DateTime.UtcNow.Date);
+            var cacheEntry = new CacheEntry<object, DateTime>(invocation.ReturnValue, dateProvider.GetCurrentUtcDate(), (createdDate) => createdDate == dateProvider.GetCurrentUtcDate());
             SetPerCalendarDayCacheValue(cacheKey, cacheEntry);
         }
 

@@ -1,22 +1,25 @@
 ﻿using DietDisplay.API.Exceptions;
+using DietDisplay.API.Logic.DateProvider;
 
 namespace DietDisplay.API.Logic.Database
 {
     public class DatabaseConnection : IDatabaseConnection
     {
         private readonly IDataAccess dataAccess;
+        private readonly IDateProvider dateProvider;
         private int[] dayIds = Array.Empty<int>();
 
-        public DatabaseConnection(IDataAccess dataAccess)
+        public DatabaseConnection(IDataAccess dataAccess, IDateProvider dateProvider)
         {
             this.dataAccess = dataAccess;
+            this.dateProvider = dateProvider;
         }
 
         /// <inheritdoc/>
         public DateTime GetOldestAvailableDate()
         {
             string query = "SELECT TOP 1 Date FROM DayMeals ORDER BY Date ASC";
-            return DateTime.SpecifyKind(dataAccess.Query<DateTime>(query).SingleOrDefault(DateTime.UtcNow.Date), DateTimeKind.Utc);
+            return DateTime.SpecifyKind(dataAccess.Query<DateTime>(new Query { Sql = query }).SingleOrDefault(dateProvider.GetCurrentUtcDate()), DateTimeKind.Utc);
         }
 
         /// <inheritdoc/>
@@ -29,9 +32,9 @@ namespace DietDisplay.API.Logic.Database
         private int GetDayMealID(DateTime date)
         {
             string query = "SELECT DayID FROM DayMeals WHERE Date = @date";
-            int dayID = dataAccess.Query<int>(query, new { date = date.Date }).SingleOrDefault();
+            int dayID = dataAccess.Query<int>(new Query { Sql = query, Parameters = new { date = date.Date } }).SingleOrDefault();
 
-            if (dayID == 0 && date.Date < DateTime.UtcNow.Date)
+            if (dayID == 0 && date.Date < dateProvider.GetCurrentUtcDate())
                 throw new NoMealsException(date);
 
             return dayID == 0 ? InitializeDayMeal(date).DayID : dayID;
@@ -41,7 +44,7 @@ namespace DietDisplay.API.Logic.Database
         {
             string query = "INSERT INTO DayMeals (Date, DayID) VALUES (@date, @dayID)";
             int dayID = GetRandomDayID();
-            dataAccess.Execute(query, new { date, dayID });
+            dataAccess.Execute(new Query { Sql = query, Parameters = new { date, dayID } });
             return new DayMealData { Date = date, DayID = dayID };
         }
 
@@ -56,7 +59,7 @@ namespace DietDisplay.API.Logic.Database
         private void LoadAllAvailableDayIDs()
         {
             string query = "SELECT DISTINCT DayID FROM Meals;";
-            dayIds = dataAccess.Query<int>(query).ToArray();
+            dayIds = dataAccess.Query<int>(new Query { Sql = query }).ToArray();
         }
 
         private MealIgredientsData[] GetMealsFromDay(int dayMealID)
@@ -73,7 +76,7 @@ namespace DietDisplay.API.Logic.Database
                 INNER JOIN Meals m ON i.MealID = m.ID
                 WHERE m.DayID = @dayMealID;";
 
-            return dataAccess.Query<MealIgredientsData>(query, new { dayMealID }).ToArray();
+            return dataAccess.Query<MealIgredientsData>(new Query { Sql = query, Parameters = new { dayMealID }}).ToArray();
         }
     }
 }
