@@ -2,6 +2,7 @@
 using DietDisplay.API.Logic;
 using DietDisplay.API.Logic.Cache;
 using DietDisplay.API.Logic.Database;
+using DietDisplay.API.Logic.DateProvider;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
@@ -12,6 +13,7 @@ namespace DietDisplay.API
     {
         public static void AddDietDisplay(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IDateProvider, DateProvider>();
             services.AddSingleton<ICache, Cache>();
             services.AddTransient<CacheInterceptor>();
             services.AddTransient<MealSelector>();
