@@ -23,7 +23,7 @@ namespace DietDisplay.API.Logic.Cache
 
 
         /// <inheritdoc/>
-        public object? GetPerCalendarDeyCacheValue(string cacheKey)
+        public object? GetPerCalendarDayCacheValue(string cacheKey)
         {
             if (perCalendarDayCache.TryGetValue(cacheKey, out CacheEntry<object, DateTime>? cacheValue))
                 return cacheValue.IsCacheValid ? cacheValue.CachedObject : null;
