@@ -23,8 +23,12 @@ jobs:
       run: dotnet restore DietDisplay.API 
     - name: Build
       run: dotnet build DietDisplay.API --no-restore
+    - name: Restore dependencies for tests
+      run: dotnet restore DietDisplay.API.Tests
+    - name: Build Test
+      run: dotnet build DietDisplay.API.Tests --no-restore
     - name: Test
-      run: dotnet test DietDisplay.API --no-build --verbosity normal
+      run: dotnet test DietDisplay.API.Tests --no-build --verbosity normal
     - name: Publish
       run: dotnet publish DietDisplay.API --no-restore -c Release -r win-x64 --no-self-contained
     - name: Archive API artifacts
