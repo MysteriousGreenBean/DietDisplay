@@ -142,4 +142,17 @@ describe('DateNavigator', () => {
         const button = screen.getByRole('button', { name: `< ${previousDate.toLocaleDateString()}` });
         expect(button).toBeDisabled();
     });
+
+    it('should render previous date when clicked', async () => {
+        (useApi as jest.Mock).mockReturnValue({
+            data: MealRangeMock,
+            loading: false,
+            error: undefined,
+        });
+        render(<DateNavigator currentDate={getCurrentDate()} />);
+        const previousDate = addDays(-1);
+        await userEvent.click(screen.getByRole('button', { name: `< ${previousDate.toLocaleDateString()}` }));
+        const date = screen.getByText(previousDate.toLocaleDateString());
+        expect(date).toBeInTheDocument();
+    });
 });
