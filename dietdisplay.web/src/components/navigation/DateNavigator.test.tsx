@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MealRangeMock } from '../../fixture/MealRangeMock';
 import { addDays, getCurrentDate, getDate } from '../../helpers/dateHelper';
-import { useApi } from '../api/useApi';
+import { useApi } from '../hooks/useApi';
 import { DateNavigator } from './DateNavigator';
 
-jest.mock('../api/useApi');
+jest.mock('../hooks/useApi');
 jest.mock('@mui/material/useMediaQuery');
 
 describe('DateNavigator', () => {    

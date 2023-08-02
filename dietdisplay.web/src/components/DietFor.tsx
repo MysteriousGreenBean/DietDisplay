@@ -1,7 +1,7 @@
 import { Alert, CircularProgress, Container } from '@mui/material';
 import { useMemo } from 'react';
 import { Meals } from './Meals';
-import { HttpMethod, useApi } from './api/useApi';
+import { CacheMethod, HttpMethod, useApi } from './hooks/useApi';
 import { Meal } from './models/Meal';
 
 
@@ -11,7 +11,7 @@ export interface DietForProps {
 
 export const DietFor = ({ date }: DietForProps) => {
     const encodedDate = useMemo(() => encodeURIComponent(date.toDateString()), [date]);
-    const { data: meals, loading, error} = useApi<Meal[]>(`meals?date=${encodedDate}`, HttpMethod.GET);
+    const { data: meals, loading, error} = useApi<Meal[]>(`meals?date=${encodedDate}`, HttpMethod.GET, CacheMethod.LocalStorage);
 
     if (loading) {
         return <Container><CircularProgress /><Container>Ładowanie posiłków...</Container></Container>
