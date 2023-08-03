@@ -3,9 +3,9 @@
 import { render, screen } from '@testing-library/react';
 import { MealsMock } from '../fixture/MealMocks';
 import { DietFor } from './DietFor';
-import { useApi } from './api/useApi';
+import { useApi } from './hooks/useApi';
 
-jest.mock('./api/useApi');
+jest.mock('./hooks/useApi');
 
 describe('DietFor', () => {
     it('should render loading indicator when loading', () => {

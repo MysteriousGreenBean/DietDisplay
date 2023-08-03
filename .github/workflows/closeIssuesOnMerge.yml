@@ -1,0 +1,32 @@
+name: Close Issues on Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check if the pull request was merged and if the branch starts with version/
+      if: |
+        github.event.pull_request.merged == true &&
+        startsWith(github.ref, 'refs/heads/version/')
+
+      run: |
+        # Extract the pull request number from the event payload
+        PR_NUMBER=$(jq --raw-output .number "$GITHUB_EVENT_PATH")
+
+        # Use the GitHub API to get the list of issues associated with the pull request
+        ISSUES=$(curl -s -H "Authorization: token ${{ secrets.TOKEN_GITHUB }}" \
+                       "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/issues" \
+                 | jq --raw-output .[].number)
+
+        # Use the GitHub API to close each associated issue
+        for issue in $ISSUES; do
+          curl -X POST -H "Authorization: token ${{ secrets.TOKEN_GITHUB }}" \
+                       "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${issue}" \
+                       -d '{"state": "closed"}' > /dev/null
+        done

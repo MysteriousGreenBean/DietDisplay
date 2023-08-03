@@ -13,16 +13,22 @@ export enum HttpMethod {
     GET = "GET",
 }
 
-export function useApi<TData>(endpoint: string, method: HttpMethod): APIResponse<TData> {
+export enum CacheMethod {
+    None,
+    LocalStorage,
+    SessionStorage   
+}
+
+export function useApi<TData>(endpoint: string, method: HttpMethod, cacheMethod: CacheMethod = CacheMethod.None): APIResponse<TData> {
     switch (method) {
         case HttpMethod.GET:
-            return useGet(endpoint);
+            return useGet(endpoint, cacheMethod);
         default:
             throw new Error(`Unsupported method ${method}`);
     }
 }
 
-export function useGet<TData>(endpoint: string): APIResponse<TData> {
+function useGet<TData>(endpoint: string, cacheMethod: CacheMethod = CacheMethod.None): APIResponse<TData> {
     const [data, setData] = useState<TData | undefined>(undefined);
     const [error, setError] = useState<any>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
@@ -35,6 +41,18 @@ export function useGet<TData>(endpoint: string): APIResponse<TData> {
 
         setLoading(true);
         const callTarget = `${url}/${endpoint}`;
+
+        if (cacheMethod !== CacheMethod.None) {
+            const cacheStorage: Storage = cacheMethod === CacheMethod.LocalStorage ? localStorage : sessionStorage;
+            const cachedData = cacheStorage.getItem(callTarget);
+            if (cachedData) {
+                console.debug(`get ${callTarget} from cache`);
+                setData(JSON.parse(cachedData) as TData);
+                setLoading(false);
+                return;
+            }
+        }
+
         fetch(callTarget, requestOptions)
             .then(response => response.json())
             .then((data) => {
@@ -46,13 +64,17 @@ export function useGet<TData>(endpoint: string): APIResponse<TData> {
                     return value;
                   });
                 setData(parsedData as TData);
+                if (cacheMethod !== CacheMethod.None) {
+                    const cacheStorage: Storage = cacheMethod === CacheMethod.LocalStorage ? localStorage : sessionStorage;
+                    cacheStorage.setItem(callTarget, JSON.stringify(parsedData));
+                }
                 setLoading(false);
             }).catch((error) => {
                 console.error(`error while calling get ${callTarget}`, error);
                 setError(error);
                 setLoading(false);
             });
-    }, [endpoint]);
+    }, [endpoint, cacheMethod]);
 
     return {
         data: data as TData,

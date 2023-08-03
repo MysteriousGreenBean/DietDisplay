@@ -15,6 +15,6 @@ namespace DietDisplay.API.Logic.Cache
         /// </summary>
         /// <param name="cacheKey">Cache key of value to obtain.</param>
         /// <returns>Cached object if any is cached, null otherwise.</returns>
-        object? GetPerCalendarDeyCacheValue(string cacheKey);
+        object? GetPerCalendarDayCacheValue(string cacheKey);
     }
 }

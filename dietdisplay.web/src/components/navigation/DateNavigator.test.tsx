@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MealRangeMock } from '../../fixture/MealRangeMock';
 import { addDays, getCurrentDate, getDate } from '../../helpers/dateHelper';
-import { useApi } from '../api/useApi';
+import { useApi } from '../hooks/useApi';
 import { DateNavigator } from './DateNavigator';
 
-jest.mock('../api/useApi');
+jest.mock('../hooks/useApi');
 jest.mock('@mui/material/useMediaQuery');
 
 describe('DateNavigator', () => {    
@@ -141,5 +141,18 @@ describe('DateNavigator', () => {
         const previousDate = addDays(-1);
         const button = screen.getByRole('button', { name: `< ${previousDate.toLocaleDateString()}` });
         expect(button).toBeDisabled();
+    });
+
+    it('should render previous date when clicked', async () => {
+        (useApi as jest.Mock).mockReturnValue({
+            data: MealRangeMock,
+            loading: false,
+            error: undefined,
+        });
+        render(<DateNavigator currentDate={getCurrentDate()} />);
+        const previousDate = addDays(-1);
+        await userEvent.click(screen.getByRole('button', { name: `< ${previousDate.toLocaleDateString()}` }));
+        const date = screen.getByText(previousDate.toLocaleDateString());
+        expect(date).toBeInTheDocument();
     });
 });

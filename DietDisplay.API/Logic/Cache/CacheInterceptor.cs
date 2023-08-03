@@ -25,21 +25,21 @@ namespace DietDisplay.API.Logic.Cache
 
         private void HandleCacheAttribute(CachedAttribute attribute, IInvocation invocation)
         {
-            switch (attribute.CacheScope)
+            switch (attribute.CacheDuration)
             {
-                case CacheScope.PerCalendarDay:
-                    HandlePerCalendarDayCacheAttribute(invocation);
+                case CacheDuration.PerCalendarDay:
+                    HandlePerCalendarDayCacheAttribute(invocation, attribute.CacheScope == CacheScope.PerArguments);
                     break;
                 default:
-                    throw new InvalidDataException($"CacheScope {attribute.CacheScope} not implemented");
+                    throw new InvalidDataException($"CacheScope {attribute.CacheDuration} not implemented");
             }
         }
 
-        private void HandlePerCalendarDayCacheAttribute(IInvocation invocation)
+        private void HandlePerCalendarDayCacheAttribute(IInvocation invocation, bool cachePerArguments)
         {
-            var cacheKey = $"{invocation.TargetType.FullName}_{invocation.Method.Name}";
+            var cacheKey = GenerateCacheKey(invocation, cachePerArguments);
 
-            object? cacheValue = cache.GetPerCalendarDeyCacheValue(cacheKey);
+            object? cacheValue = cache.GetPerCalendarDayCacheValue(cacheKey);
 
             if (cacheValue == null)
             {
@@ -49,6 +49,21 @@ namespace DietDisplay.API.Logic.Cache
             {
                 invocation.ReturnValue = cacheValue;
             }
+        }
+
+        private string GenerateCacheKey(IInvocation invocation, bool cachePerArguments)
+        {
+            var cacheKey = $"{invocation.TargetType.FullName}_{invocation.Method.Name}";
+
+            if (cachePerArguments)
+            {
+                foreach (var argument in invocation.Arguments)
+                {
+                    cacheKey += $"_{argument}";
+                }
+            }
+
+            return cacheKey;
         }
     }
 }

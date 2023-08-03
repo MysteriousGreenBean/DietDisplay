@@ -24,7 +24,7 @@ namespace DietDisplay.API.Tests.Logic.Cache
             // Assert
             invocation.Verify(i => i.Proceed(), Times.Once);
             invocation.VerifyGet(i => i.ReturnValue, Times.Once);
-            Assert.That(cache.GetPerCalendarDeyCacheValue(cacheKey), Is.SameAs(cachedObject));
+            Assert.That(cache.GetPerCalendarDayCacheValue(cacheKey), Is.SameAs(cachedObject));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace DietDisplay.API.Tests.Logic.Cache
             var cache = new TestedCache(dateProvider.Object);
 
             // Act
-            var result = cache.GetPerCalendarDeyCacheValue("cacheKey");
+            var result = cache.GetPerCalendarDayCacheValue("cacheKey");
 
             // Assert
             Assert.That(result, Is.Null);
@@ -57,7 +57,7 @@ namespace DietDisplay.API.Tests.Logic.Cache
 
             // Act
             dateProvider.Setup(d => d.GetCurrentUtcDate()).Returns(DateTime.UtcNow.AddDays(1));
-            var result = cache.GetPerCalendarDeyCacheValue(cacheKey);
+            var result = cache.GetPerCalendarDayCacheValue(cacheKey);
 
             Assert.That(result, Is.Null);
         }

@@ -1,7 +1,8 @@
 import { AppBar, Box, Button, Container, Toolbar, Typography, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import { addDays } from "../../helpers/dateHelper";
-import { HttpMethod, useApi } from "../api/useApi";
+import { CacheMethod, HttpMethod, useApi } from "../hooks/useApi";
+import { useSwipeEvents } from "../hooks/useSwipeEvents";
 import { MealRange } from "../models/MealRange";
 
 export interface DateNavigatorProps {
@@ -12,8 +13,8 @@ export interface DateNavigatorProps {
 export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) => {
     const [ date, setDate ] = useState(currentDate);
     const isSmallScreen = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
-
-    const { data: mealRange, loading, error } = useApi<MealRange>('mealRange', HttpMethod.GET);
+    
+    const { data: mealRange, loading, error } = useApi<MealRange>('mealRange', HttpMethod.GET, CacheMethod.SessionStorage);
 
     const updateDate = (newDate: Date) => {
         onDateChange?.(newDate);
@@ -22,7 +23,11 @@ export const DateNavigator = ({currentDate, onDateChange} : DateNavigatorProps) 
 
     const nextDate = addDays(1, date);
     const previousDate = addDays(-1, date);
-    
+
+    const swipeEventHandler = useSwipeEvents();
+    swipeEventHandler.handleSwipeLeft = () => updateDate(nextDate);
+    swipeEventHandler.handleSwipeRight = () => updateDate(previousDate);
+
     const nextbuttonText = isSmallScreen ? '>' : `${nextDate.toLocaleDateString()} >`;
     const previousButtonText = isSmallScreen ? '<' : `< ${previousDate.toLocaleDateString()}`;
 
