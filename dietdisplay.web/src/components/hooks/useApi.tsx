@@ -74,7 +74,7 @@ function useGet<TData>(endpoint: string, cacheMethod: CacheMethod = CacheMethod.
                 setError(error);
                 setLoading(false);
             });
-    }, [endpoint]);
+    }, [endpoint, cacheMethod]);
 
     return {
         data: data as TData,

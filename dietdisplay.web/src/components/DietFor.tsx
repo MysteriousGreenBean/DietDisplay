@@ -1,6 +1,6 @@
 import { Alert, CircularProgress, Container } from '@mui/material';
 import { useMemo } from 'react';
-import { Meals } from './Meals';
+import { Meals } from './Meals/Meals';
 import { CacheMethod, HttpMethod, useApi } from './hooks/useApi';
 import { Meal } from './models/Meal';
 

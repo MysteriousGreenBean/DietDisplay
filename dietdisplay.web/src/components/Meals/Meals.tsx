@@ -2,16 +2,16 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Box, Collapse, Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
-import { Meal, MealType } from './models/Meal';
+import { Meal, MealType } from '../models/Meal';
+import { expandedByDefaultMealType } from './MealsFunctions';
 
 
 export interface MealsProps {
     meals: Meal[];
 }
 
-function Row(props: { row: Meal}) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(row.type === MealType.Breakfast);
+function Row({ row, isExpandedByDefault }: { row: Meal, isExpandedByDefault: boolean }) {
+  const [open, setOpen] = React.useState(isExpandedByDefault);
 
   return (
     <React.Fragment>
@@ -68,6 +68,7 @@ export const Meals = ({ meals }: MealsProps) => {
     return (<Container data-testid='meals'>Brak posiłków</Container>)
   }
 
+  const mealTypeExpandedbyDefault: MealType = expandedByDefaultMealType(meals, new Date());
   return (
       <Container data-testid='meals'>
           <TableContainer>
@@ -82,7 +83,7 @@ export const Meals = ({ meals }: MealsProps) => {
                   <TableBody>
                     {
                       meals.map((meal) => (
-                        <Row key={meal.type} row={meal} />
+                        <Row key={meal.type} row={meal} isExpandedByDefault={mealTypeExpandedbyDefault === meal.type}/>
                       ))
                     }
                   </TableBody>
