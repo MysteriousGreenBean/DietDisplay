@@ -2,8 +2,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Box, Collapse, Container, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react';
-import { getDate } from '../helpers/dateHelper';
-import { Meal, MealType } from './models/Meal';
+import { Meal, MealType } from '../models/Meal';
+import { expandedByDefaultMealType } from './MealsFunctions';
 
 
 export interface MealsProps {
@@ -62,62 +62,13 @@ function Row({ row, isExpandedByDefault }: { row: Meal, isExpandedByDefault: boo
   );
 }
 
-function dividePeriodIntoParts(start: Date, end: Date, numberOfParts: number): Date[] {
-  const diffInMillis = end.getTime() - start.getTime();
-  const intervalInMillis = diffInMillis / numberOfParts;
-
-  const result: Date[] = [];
-
-  const todayMidnight = getDate(start);
-  result.push(todayMidnight);
-
-  for (let i = 0; i <= numberOfParts - 1; i++) {
-    const newDate = new Date(start.getTime() + intervalInMillis * i);
-    result.push(newDate);
-  }
-
-  const endOfDay = new Date(todayMidnight.getFullYear(), todayMidnight.getMonth(), todayMidnight.getDate(), 23, 59, 59, 999);
-  result.push(endOfDay);
-
-  return result;
-}
-
-function isBetween(date: Date, startDate: Date, endDate: Date) {
-  return date >= startDate && date < endDate;
-}
-
-const expandedByDefaultMealType = (meals: Meal[]) => {
-  const now = new Date();
-  console.log("now", now);
-  const firstMealTime = new Date(now);
-  firstMealTime.setHours(10, 30, 0, 0);
-  const lastMealTime = new Date(now);
-  lastMealTime.setHours(18, 0, 0, 0);
-
-  if (now < firstMealTime) 
-    return meals[0].type;
-  if (now > lastMealTime)
-    return meals[meals.length - 1].type;
-
-  const mealPeriods = dividePeriodIntoParts(firstMealTime, lastMealTime, meals.length - 1);
-  const mealPeriodsWithTypes: { periodStart: Date, periodEnd: Date, mealType: MealType }[] = [];
-  for (let i = 0; i < mealPeriods.length - 1; i++) {
-    mealPeriodsWithTypes.push({
-      periodStart: mealPeriods[i],
-      periodEnd: mealPeriods[i + 1],
-      mealType: meals[i].type
-    });
-  }
-  const currentMealPeriod = mealPeriodsWithTypes.find((mealPeriodWithType) => isBetween(now, mealPeriodWithType.periodStart, mealPeriodWithType.periodEnd));
-  return currentMealPeriod?.mealType ?? meals[0].type;
-}
 
 export const Meals = ({ meals }: MealsProps) => {
   if (meals.length === 0) {
     return (<Container data-testid='meals'>Brak posiłków</Container>)
   }
 
-  const mealTypeExpandedbyDefault: MealType = expandedByDefaultMealType(meals);
+  const mealTypeExpandedbyDefault: MealType = expandedByDefaultMealType(meals, new Date());
   return (
       <Container data-testid='meals'>
           <TableContainer>
